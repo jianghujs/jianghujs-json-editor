@@ -1,0 +1,356 @@
+{% extends 'template/jhTemplateV3.html'%}
+{% set appId = ctx.app.config.appId %}
+{% set static = "/" + appId + "/public" %}
+{% set language = ctx.app.config.language %}
+{% block css %}
+
+<link href="<$ static $>/jsoneditor/jsoneditor.css" rel="stylesheet">
+<script src="<$ static $>/jsoneditor/jsoneditor.js"></script>
+{% endblock %}
+{% block vue_template %}
+
+<jh-layout-v3>
+
+
+  <!-- 页面主要内容 -->
+  <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
+    <v-card>
+      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
+        :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+        <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增</v-btn>
+          <span class="body-2">共{{ tableData.length }}条记录</span>
+        </v-col>
+
+        <v-spacer></v-spacer>
+
+        <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+          <v-text-field v-model="searchInput" color="success" prefix="表格过滤：" class="cus-v-input" dense filled single-line></v-text-field>
+        </v-col>
+      </v-row>
+      <v-data-table fixed-header :headers="headers" :items="tableData" :search="searchInput"
+        :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="20" mobile-breakpoint="0"
+        :loading="isTableLoading" checkbox-color="success" class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+        <!--    <template v-slot:item.level="{ item }">-->
+        <!--      {{ getConstantCollectionItemText('level', item.level) }}-->
+        <!--    </template>-->
+        <template v-slot:item.action="{ item }">
+          <v-btn small class="mr-2" :class="tableButton.color" v-for="tableButton of tableButtonList"
+            @click="doUiAction(tableButton.action, {item})">
+            {{ tableButton.text }}
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
+  </v-container>
+
+  <!-- 编辑抽屉 -->
+  <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%" 
+    class="elevation-24">
+    <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
+      <v-row class="pt-8">
+        <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">{{ currentClickButton.title }}信息</span>
+        <v-spacer></v-spacer>
+        <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
+          <v-icon dark>mdi-close</v-icon>
+        </v-btn>
+      </v-row>
+      <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
+
+        <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">constantKey</span>
+          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model="editItem['constantKey']">
+          </v-text-field>
+        </v-col>
+
+        <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">常量类型</span>
+          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model="editItem['constantType']">
+          </v-text-field>
+        </v-col>
+
+        <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">页面id</span>
+          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model="editItem['pageId']">
+          </v-text-field>
+        </v-col>
+
+        <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">描述</span>
+          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model="editItem['desc']"></v-text-field>
+        </v-col>
+        
+        <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">内容</span>
+          <vue-json-editor v-if="jsonConstantTypeList.includes(editItem.constantType)" v-model="editItem[language]" :show-btns="true" :mode="'code'" lang="zh" @json-change="onJsonChange" @json-save="onJsonSave" @has-error="onError"></vue-json-editor>
+          <v-textarea
+            v-else-if="editItem.constantType === 'html'"
+            filled single-line
+            v-model="editItem[language]"
+            name="input-7-4"
+            label="filled single-line textarea"
+            :rows="12"
+            value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
+          ></v-textarea>
+          <v-text-field v-else class="cus-v-input mr-2" dense filled single-line label="常量内容" v-model="editItem[language]"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+        <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)">保存
+        </v-btn>
+        <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
+      </v-row>
+    </v-form>
+  </v-navigation-drawer>
+
+</jh-layout-v3>
+
+{% endblock %}
+
+{% block vue_body %}
+
+{% include 'component/vueJsonEditor.html' %}
+
+<script type="module">
+  new Vue({
+    el: '#app',
+    template: '#app-template',
+    vuetify: new Vuetify(),
+    mixins: [window.jianghuUiActionMixins],
+    data: () => ({
+      // 表格相关数据
+      language: '<$ language $>',
+      isFormValid: true,
+      requireRules: [
+        v => !!v || 'This is required',
+      ],
+      constantCollection: {
+      },
+
+      serverSearchInput: {
+        studentId: null,
+        classId: null
+      },
+      currentTableGenderType: 'all',
+      isEditDrawerShow: false,
+      searchInput: null,
+      isTableLoading: true,
+      tableDataFromBackend: [],
+      headers: [
+        { text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed' },
+
+        { text: "constantKey", value: "constantKey", width: 120 },
+        { text: "常量类型", value: "constantType", width: 120 },
+        { text: "页面id", value: "pageId", width: 120 },
+        { text: "描述", value: "desc", width: 120 },
+        { text: "操作者", value: "operationByUser", width: 120 },
+        { text: "操作时间", value: "operationAt", width: 250 },
+        { text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed' },
+      ],
+
+      currentClickButton: { title: '新增', action: 'add' },
+      editItem: {},
+      tableButtonList: [
+        { text: '修改', buttonType: 'edit', color: 'success', action: 'startUpdateItem' },
+        { text: '删除', buttonType: 'delete', color: 'error', action: 'deleteItem' },
+      ],
+      dialogSaveInfoAction: '',
+      jsonError: false,
+      jsonConstantTypeList: ['object', 'array']
+    }),
+    computed: {
+      isMobile() {
+        return window.innerWidth < 600;
+      },
+      tableData() {
+        if (!this.currentTableGenderType || this.currentTableGenderType === 'all') {
+          return this.tableDataFromBackend;
+        }
+        return this.tableDataFromBackend.filter(({ gender }) => gender === this.currentTableGenderType);
+      },
+      computedEditItem() {
+        return this.editItem;
+      },
+    },
+    watch: {},
+    async created() {
+      await this.doUiAction('refreshTableData');
+    },
+    mounted() { },
+    methods: {
+      /** 
+       * uiActionId:  refreshTableData
+       * description: ✅获取表格数据
+       * main:   [{"function":"refreshTableData"}]
+      */
+      async refreshTableData() {
+        this.isTableLoading = true;
+        const serverSearchInput = _.pickBy(this.serverSearchInput, value => !!value);
+        const rows = (await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'constantUiManagement',
+              actionId: 'selectItemList',
+              actionData: {},
+              where: {},
+              whereLike: serverSearchInput,
+              orderBy: [{ column: 'operationAt', order: 'desc' }]
+            }
+          }
+        })).data.appData.resultData.rows;
+
+        for (const item of rows) {
+          if (this.jsonConstantTypeList.includes(item.constantType)) {
+            item[this.language] = JSON.parse(item[this.language]);
+          }
+          // item[this.language] = ['obje'] item.constantType JSON.parse()
+        }
+        this.tableDataFromBackend = rows;
+        this.isTableLoading = false;
+      },
+
+      /** 
+       * uiActionId:  startCreateItem
+       * description: ✅打开创建数据抽屉
+       * main:   [{"function":"clearItemData"},{"function":"openCreateItemDialog"}]
+      */
+      async clearItemData() {
+        this.editItem = {};
+      },
+
+      async openCreateItemDialog() {
+        this.currentClickButton = { action: 'add', title: '新增' };
+        this.isEditDrawerShow = true;
+        this.dialogSaveInfoAction = 'createItem';
+      },
+
+      /** 
+       * uiActionId:  createItem
+       * description: ✅创建数据
+       * before: [{"function":"prepareValidate"},{"function":"confirmCreateItemDialog"}]
+       * main:   [{"function":"doCreateItem"},{"function":"getTableData"}]
+       * after:  [{"function":"closeDrawerShow"}]
+      */
+      async confirmCreateItemDialog() {
+        return window.confirmDialog({ title: '新增', content: '确定新增吗？' })
+      },
+
+      async doCreateItem() {
+        delete this.computedEditItem.id;
+        const data = {...this.computedEditItem };
+        data[this.language] = this.jsonConstantTypeList.includes(this.computedEditItem.constantType) ? JSON.stringify(this.computedEditItem[this.language]) : this.computedEditItem[this.language];
+        await window.vtoast.loading("新增数据");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'constantUiManagement',
+              actionId: 'insertItem',
+              actionData: data
+            }
+          }
+        })
+        await window.vtoast.success("新增数据成功");
+      },
+
+      async closeDrawerShow() {
+        this.isEditDrawerShow = false;
+      },
+
+      /** 
+       * uiActionId:  startUpdateItem
+       * description: ✅打开更新数据抽屉
+       * main:   [{"function":"prepareItemData"},{"function":"openUpdateItemDialog"}]
+      */
+      async prepareItemData({ item }) {
+        this.editItem = { ...item };
+      },
+
+      async openUpdateDialog() {
+        this.currentClickButton = { action: 'edit', title: '修改' };
+        this.isEditDrawerShow = true;
+        this.dialogSaveInfoAction = 'updateItem';
+      },
+
+      /** 
+       * uiActionId:  updateItem
+       * description: ✅更新数据
+       * before: [{"function":"prepareValidate"},{"function":"confirmUpdateItemDialog"}]
+       * main:   [{"function":"doUpdateItem"},{"function":"getTableData"}]
+       * after:  [{"function":"closeDrawerShow"}]
+      */
+      async confirmUpdateItemDialog() {
+        return window.confirmDialog({ title: '修改', content: '确定修改吗？' });
+      },
+
+      async doUpdateItem() {
+        const id = this.computedEditItem.id;
+        delete this.computedEditItem.id;
+        const data = {...this.computedEditItem };
+        data[this.language] = this.jsonConstantTypeList.includes(this.computedEditItem.constantType) ? JSON.stringify(this.computedEditItem[this.language]) : this.computedEditItem[this.language];
+        await window.vtoast.loading("修改数据");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'constantUiManagement',
+              actionId: 'updateItem',
+              actionData: data,
+              where: { id: id }
+            }
+          }
+        })
+        await window.vtoast.success("修改数据成功");
+      },
+
+      /** 
+       * uiActionId:  deleteItem
+       * description: ✅删除数据
+       * before: [{"function":"confirmDeleteItemDialog"}]
+       * main:   [{"function":"prepareItemData"},{"function":"doDeleteItem"},{"function":"getTableData"}]
+      */
+      async confirmDeleteItemDialog() {
+        return window.confirmDialog({ title: '删除', content: '确定删除吗？' });
+      },
+
+      async doDeleteItem({ item }) {
+        const { id } = item;
+        await window.vtoast.loading("删除数据");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'constantUiManagement',
+              actionId: 'deleteItem',
+              actionData: {},
+              where: { id: id }
+            }
+          }
+        });
+        await window.vtoast.success("删除数据成功");
+      },
+      getConstantCollectionItemText(key, _value) {
+        const constantCollectionItemFind = this.constantCollection[key].find(({ value }) => value === _value);
+        if (constantCollectionItemFind) {
+          return constantCollectionItemFind.text;
+        }
+        return value;
+      },
+      onJsonChange() {
+
+      },
+      onJsonSave(value) {
+        if (this.jsonObj.type === 'ui') {
+          this.ui.list[this.jsonObj.index][this.jsonObj.key] = JSON.stringify(value);
+        } else {
+          this.resource.list[this.jsonObj.index][this.jsonObj.key] = JSON.stringify(value);
+        }
+        this.editJsonDialog = false;
+      },
+      onError(res) {
+        this.jsonError = res;
+      },
+    }
+  })
+</script>
+
+<style scoped>
+</style>
+{% endblock %}
