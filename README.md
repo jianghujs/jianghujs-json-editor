@@ -29,12 +29,7 @@ use jianghujs-jsoneditor;
 
 ## 页面
 
-1. 应用协议: studentManagement01.html
-   * 增删改查（select，insert，softUpdate，softDelete）
-2. 前端对接: studentManagement03.html
-3. 前端优化: studentManagement04.html
-4. 服务端搜索: studentManagement05.html
-   * 应用协议：sql演示
+1. 示例列表: constantUiManagement.html
 
 ## FAQ
 
