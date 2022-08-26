@@ -88,6 +88,7 @@
     template: '#app-template',
     vuetify: new Vuetify(),
     data: () => ({
+      isMobile: window.innerWidth < 600,
       // 表格相关数据
       language: '<$ language $>',
       isFormValid: true,
@@ -96,25 +97,19 @@
       ],
       currentClickButton: { title: '新增', action: 'add' },
       editItem: {},
+      computedEditItem: {},
       dialogSaveInfoAction: 'createItem',
       jsonError: false,
       jsonConstantTypeList: ['object', 'array']
     }),
     computed: {
-      isMobile() {
-        return window.innerWidth < 600;
-      },
-      tableData() {
-        if (!this.currentTableGenderType || this.currentTableGenderType === 'all') {
-          return this.tableDataFromBackend;
-        }
-        return this.tableDataFromBackend.filter(({ gender }) => gender === this.currentTableGenderType);
-      },
-      computedEditItem() {
-        return this.editItem;
-      },
+
     },
-    watch: {},
+    watch: {
+      editItem(value) {
+        this.computedEditItem = value;
+      }
+    },
     async created() {
       const searchParams = new URLSearchParams(location.search.substring(1));
       const type = searchParams.get('type');

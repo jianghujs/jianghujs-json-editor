@@ -57,6 +57,7 @@
     template: '#app-template',
     vuetify: new Vuetify(),
     data: () => ({
+      isMobile: window.innerWidth < 600,
       // 表格相关数据
       language: '<$ language $>',
       isFormValid: true,
@@ -75,6 +76,7 @@
       searchInput: null,
       isTableLoading: true,
       tableDataFromBackend: [],
+      tableData: [],
       headers: [
         { text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed' },
 
@@ -97,20 +99,7 @@
       jsonError: false,
       jsonConstantTypeList: ['object', 'array']
     }),
-    computed: {
-      isMobile() {
-        return window.innerWidth < 600;
-      },
-      tableData() {
-        if (!this.currentTableGenderType || this.currentTableGenderType === 'all') {
-          return this.tableDataFromBackend;
-        }
-        return this.tableDataFromBackend.filter(({ gender }) => gender === this.currentTableGenderType);
-      },
-      computedEditItem() {
-        return this.editItem;
-      },
-    },
+    computed: {},
     watch: {},
     async created() {
       await this.doUiAction('refreshTableData');
@@ -166,6 +155,7 @@
           // item[this.language] = ['obje'] item.constantType JSON.parse()
         }
         this.tableDataFromBackend = rows;
+        this.tableData = rows;
         this.isTableLoading = false;
       },
 
