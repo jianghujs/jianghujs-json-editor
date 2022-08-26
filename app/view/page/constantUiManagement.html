@@ -18,7 +18,7 @@
       <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
         :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
         <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增</v-btn>
+          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('createItem')">新增</v-btn>
           <span class="body-2">共{{ tableData.length }}条记录</span>
         </v-col>
 
@@ -56,7 +56,6 @@
     el: '#app',
     template: '#app-template',
     vuetify: new Vuetify(),
-    mixins: [window.jianghuUiActionMixins],
     data: () => ({
       // 表格相关数据
       language: '<$ language $>',
@@ -91,7 +90,7 @@
       currentClickButton: { title: '新增', action: 'add' },
       editItem: {},
       tableButtonList: [
-        { text: '修改', buttonType: 'edit', color: 'success', action: 'startUpdateItem' },
+        { text: '修改', buttonType: 'edit', color: 'success', action: 'updateItem' },
         { text: '删除', buttonType: 'delete', color: 'error', action: 'deleteItem' },
       ],
       dialogSaveInfoAction: '',
@@ -118,6 +117,27 @@
     },
     mounted() { },
     methods: {
+      async doUiAction(actionId, actionData) {
+        switch (actionId) {
+          case 'refreshTableData':
+            await this.refreshTableData(actionData);
+            break;
+          case 'createItem':
+            await this.doCreateItem(actionData);
+            break;
+          case 'updateItem':
+            await this.doUpdateItem(actionData);
+            break;
+          case 'deleteItem':
+            await this.confirmDeleteItemDialog(actionData);
+            await this.doDeleteItem(actionData);
+            await this.refreshTableData(actionData);
+            break;
+          default:
+            console.error("[doUiAction] actionId not find", { actionId });
+            break;
+        }
+      },
       /** 
        * uiActionId:  refreshTableData
        * description: ✅获取表格数据
@@ -152,18 +172,18 @@
       /** 
        * uiActionId:  startCreateItem
        * description: ✅打开创建数据抽屉
-       * main:   [{"function":"clearItemData"},{"function":"openCreateItemDialog"}]
+       * main:   [{"function":"doCreateItem"}]
       */
-      async clearItemData() {
+      async doCreateItem() {
         window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?type=add`;
       },
 
       /** 
        * uiActionId:  startUpdateItem
        * description: ✅打开更新数据抽屉
-       * main:   [{"function":"prepareItemData"},{"function":"openUpdateItemDialog"}]
+       * main:   [{"function":"doUpdateItem"},{"function":"openUpdateItemDialog"}]
       */
-      async prepareItemData({ item }) {
+      async doUpdateItem({ item }) {
         sessionStorage.setItem('constantUiItem', JSON.stringify(item))
         window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?type=edit`;
       },
@@ -172,10 +192,12 @@
        * uiActionId:  deleteItem
        * description: ✅删除数据
        * before: [{"function":"confirmDeleteItemDialog"}]
-       * main:   [{"function":"prepareItemData"},{"function":"doDeleteItem"},{"function":"getTableData"}]
+       * main:   [{"function":"doDeleteItem"},{"function":"getTableData"}]
       */
       async confirmDeleteItemDialog() {
-        return window.confirmDialog({ title: '删除', content: '确定删除吗？' });
+        if (await window.confirmDialog({title: "删除", content: "确定删除吗？"}) === false) {
+          throw new Error("[confirmDeleteItemDialog] 否");
+        }
       },
 
       async doDeleteItem({ item }) {

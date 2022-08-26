@@ -26,9 +26,9 @@
         <v-row class="pt-8">
           <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">{{ currentClickButton.title }}信息</span>
           <v-spacer></v-spacer>
-          <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
+          <!-- <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
             <v-icon dark>mdi-close</v-icon>
-          </v-btn>
+          </v-btn> -->
         </v-row>
         <v-row class="pb-7" :class="{'px-10': !isMobile, 'px-3': isMobile}">
 
@@ -87,7 +87,6 @@
     el: '#app',
     template: '#app-template',
     vuetify: new Vuetify(),
-    mixins: [window.jianghuUiActionMixins],
     data: () => ({
       // 表格相关数据
       language: '<$ language $>',
@@ -134,18 +133,34 @@
     },
     mounted() { },
     methods: {
+      async doUiAction(actionId, actionData) {
+        switch (actionId) {
+          case 'createItem':
+            await this.confirmCreateItemDialog(actionData);
+            await this.doCreateItem(actionData);
+            break;
+          case 'updateItem':
+            await this.confirmUpdateItemDialog(actionData);
+            await this.doUpdateItem(actionData);
+            break;
+          default:
+            console.error("[doUiAction] actionId not find", { actionId });
+            break;
+        }
+      },
       async clearItemData() {
         this.editItem = {constantKey: '', constantType: '', pageId: '', desc: ''};
       },
       /** 
        * uiActionId:  createItem
        * description: ✅创建数据
-       * before: [{"function":"prepareValidate"},{"function":"confirmCreateItemDialog"}]
-       * main:   [{"function":"doCreateItem"},{"function":"getTableData"}]
-       * after:  [{"function":"closeDrawerShow"}]
+       * before: [{"function":"confirmCreateItemDialog"}]
+       * main:   [{"function":"doCreateItem"}]
       */
       async confirmCreateItemDialog() {
-        return window.confirmDialog({ title: '新增', content: '确定新增吗？' })
+        if (await window.confirmDialog({title: "新增", content: "确定新增吗？"}) === false) {
+          throw new Error("[confirmCreateFormDialog] 否");
+        }
       },
 
       async doCreateItem() {
@@ -165,19 +180,16 @@
         await window.vtoast.success("新增数据成功");
       },
 
-      async closeDrawerShow() {
-        this.isEditDrawerShow = false;
-      },
-
       /** 
        * uiActionId:  updateItem
        * description: ✅更新数据
-       * before: [{"function":"prepareValidate"},{"function":"confirmUpdateItemDialog"}]
-       * main:   [{"function":"doUpdateItem"},{"function":"getTableData"}]
-       * after:  [{"function":"closeDrawerShow"}]
+       * before: [{"function":"confirmUpdateItemDialog"}]
+       * main:   [{"function":"doUpdateItem"}]
       */
       async confirmUpdateItemDialog() {
-        return window.confirmDialog({ title: '修改', content: '确定修改吗？' });
+        if (await window.confirmDialog({title: "修改", content: "确定修改吗？"}) === false) {
+          throw new Error("[confirmUpdateItemDialog] 否");
+        }
       },
 
       async doUpdateItem() {
