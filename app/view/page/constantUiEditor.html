@@ -128,8 +128,8 @@
     },
     mounted() { },
     methods: {
-      async doUiAction(actionId, actionData) {
-        switch (actionId) {
+      async doUiAction(uiActionId, actionData) {
+        switch (uiActionId) {
           case 'createItem':
             await this.confirmCreateItemDialog(actionData);
             await this.doCreateItem(actionData);
@@ -139,7 +139,7 @@
             await this.doUpdateItem(actionData);
             break;
           default:
-            console.error("[doUiAction] actionId not find", { actionId });
+            console.error("[doUiAction] uiActionId not find", { uiActionId });
             break;
         }
       },

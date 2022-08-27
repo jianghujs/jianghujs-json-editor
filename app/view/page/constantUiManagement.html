@@ -106,8 +106,8 @@
     },
     mounted() { },
     methods: {
-      async doUiAction(actionId, actionData) {
-        switch (actionId) {
+      async doUiAction(uiActionId, actionData) {
+        switch (uiActionId) {
           case 'refreshTableData':
             await this.refreshTableData(actionData);
             break;
@@ -123,7 +123,7 @@
             await this.refreshTableData(actionData);
             break;
           default:
-            console.error("[doUiAction] actionId not find", { actionId });
+            console.error("[doUiAction] uiActionId not find", { uiActionId });
             break;
         }
       },
