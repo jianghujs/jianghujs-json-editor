@@ -54,7 +54,7 @@
             <span class="inputLabel">描述</span>
             <v-text-field class="cus-v-input mr-2" dense filled single-line v-model="editItem['desc']"></v-text-field>
           </v-col>
-          
+
           <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
             <span class="inputLabel">内容</span>
             <vue-json-editor v-if="jsonConstantTypeList.includes(editItem.constantType)" v-model="editItem[language]" :show-btns="true" :mode="'code'" lang="zh" @json-change="onJsonChange" @json-save="onJsonSave" @has-error="onError"></vue-json-editor>
@@ -102,9 +102,6 @@
       jsonError: false,
       jsonConstantTypeList: ['object', 'array']
     }),
-    computed: {
-
-    },
     watch: {
       editItem(value) {
         this.computedEditItem = value;
@@ -114,29 +111,25 @@
       const searchParams = new URLSearchParams(location.search.substring(1));
       const type = searchParams.get('type');
       if(type === 'edit') {
-        const constantUiItem = sessionStorage.getItem('constantUiItem');
-        if(constantUiItem) {
-          this.dialogSaveInfoAction = 'updateItem';
-          this.editItem = JSON.parse(constantUiItem);
-          sessionStorage.removeItem('constantUiItem');
-        } else {
-          history.back();
-        }
+        this.doUiAction('syncEditItem')
       } else {
         this.clearItemData();
       }
     },
     mounted() { },
     methods: {
-      async doUiAction(uiActionId, actionData) {
+      async doUiAction(uiActionId, uiActionData) {
         switch (uiActionId) {
           case 'createItem':
-            await this.confirmCreateItemDialog(actionData);
-            await this.doCreateItem(actionData);
+            await this.confirmCreateItemDialog(uiActionData);
+            await this.doCreateItem(uiActionData);
+            break;
+          case 'syncEditItem':
+            await this.confirmUpdateItemDialog(uiActionData);
+            await this.doUpdateItem(uiActionData);
             break;
           case 'updateItem':
-            await this.confirmUpdateItemDialog(actionData);
-            await this.doUpdateItem(actionData);
+            await this.syncEditItem(uiActionData);
             break;
           default:
             console.error("[doUiAction] uiActionId not find", { uiActionId });
@@ -146,7 +139,17 @@
       async clearItemData() {
         this.editItem = {constantKey: '', constantType: '', pageId: '', desc: ''};
       },
-      /** 
+      syncEditItem() {
+        const constantUiItem = sessionStorage.getItem('constantUiItem');
+        if(constantUiItem) {
+          this.dialogSaveInfoAction = 'updateItem';
+          this.editItem = JSON.parse(constantUiItem);
+          sessionStorage.removeItem('constantUiItem');
+        } else {
+          history.back();
+        }
+      },
+      /**
        * uiActionId:  createItem
        * description: ✅创建数据
        * before: [{"function":"confirmCreateItemDialog"}]
@@ -175,7 +178,7 @@
         await window.vtoast.success("新增数据成功");
       },
 
-      /** 
+      /**
        * uiActionId:  updateItem
        * description: ✅更新数据
        * before: [{"function":"confirmUpdateItemDialog"}]

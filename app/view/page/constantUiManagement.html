@@ -99,35 +99,34 @@
       jsonError: false,
       jsonConstantTypeList: ['object', 'array']
     }),
-    computed: {},
     watch: {},
     async created() {
       await this.doUiAction('refreshTableData');
     },
     mounted() { },
     methods: {
-      async doUiAction(uiActionId, actionData) {
+      async doUiAction(uiActionId, uiActionData) {
         switch (uiActionId) {
           case 'refreshTableData':
-            await this.refreshTableData(actionData);
+            await this.refreshTableData(uiActionData);
             break;
           case 'createItem':
-            await this.doCreateItem(actionData);
+            await this.doCreateItem(uiActionData);
             break;
           case 'updateItem':
-            await this.doUpdateItem(actionData);
+            await this.doUpdateItem(uiActionData);
             break;
           case 'deleteItem':
-            await this.confirmDeleteItemDialog(actionData);
-            await this.doDeleteItem(actionData);
-            await this.refreshTableData(actionData);
+            await this.confirmDeleteItemDialog(uiActionData);
+            await this.doDeleteItem(uiActionData);
+            await this.refreshTableData(uiActionData);
             break;
           default:
             console.error("[doUiAction] uiActionId not find", { uiActionId });
             break;
         }
       },
-      /** 
+      /**
        * uiActionId:  refreshTableData
        * description: ✅获取表格数据
        * main:   [{"function":"refreshTableData"}]
@@ -159,7 +158,7 @@
         this.isTableLoading = false;
       },
 
-      /** 
+      /**
        * uiActionId:  startCreateItem
        * description: ✅打开创建数据抽屉
        * main:   [{"function":"doCreateItem"}]
@@ -168,7 +167,7 @@
         window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?type=add`;
       },
 
-      /** 
+      /**
        * uiActionId:  startUpdateItem
        * description: ✅打开更新数据抽屉
        * main:   [{"function":"doUpdateItem"},{"function":"openUpdateItemDialog"}]
@@ -178,7 +177,7 @@
         window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?type=edit`;
       },
 
-      /** 
+      /**
        * uiActionId:  deleteItem
        * description: ✅删除数据
        * before: [{"function":"confirmDeleteItemDialog"}]
