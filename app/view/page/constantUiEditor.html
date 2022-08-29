@@ -124,11 +124,11 @@
             await this.confirmCreateItemDialog(uiActionData);
             await this.doCreateItem(uiActionData);
             break;
-          case 'syncEditItem':
+          case 'updateItem':
             await this.confirmUpdateItemDialog(uiActionData);
             await this.doUpdateItem(uiActionData);
             break;
-          case 'updateItem':
+          case 'syncEditItem':
             await this.syncEditItem(uiActionData);
             break;
           default:
