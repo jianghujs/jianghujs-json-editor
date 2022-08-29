@@ -140,6 +140,7 @@
         this.editItem = {constantKey: '', constantType: '', pageId: '', desc: ''};
       },
       syncEditItem() {
+        this.currentClickButton = {action: 'edit', title: '修改'};
         const constantUiItem = sessionStorage.getItem('constantUiItem');
         if(constantUiItem) {
           this.dialogSaveInfoAction = 'updateItem';
