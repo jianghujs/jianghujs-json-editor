@@ -106,13 +106,13 @@
       dialogSaveInfoAction: 'createItem',
       jsonError: false,
       jsonConstantTypeList: ['object', 'array'],
-      loading: true,
-      id: null
+      loading: false
     }),
     async created() {
       const searchParams = new URLSearchParams(location.search.substring(1));
-      this.id = searchParams.get('id');
-      if(this.id) {
+      const id = searchParams.get('id');
+      if(id) {
+        this.editItem = { id };
         this.doUiAction('getItemInfo')
       } else {
         this.clearItemData();
@@ -125,7 +125,6 @@
           case 'createItem':
             await this.confirmCreateItemDialog(uiActionData);
             await this.doCreateItem(uiActionData);
-            await this.getItemInfo();
             break;
           case 'updateItem':
             await this.confirmUpdateItemDialog(uiActionData);
@@ -141,6 +140,7 @@
         }
       },
       async clearItemData() {
+        this.currentClickButton = { title: '新增', action: 'add' },
         this.editItem = {constantKey: '', constantType: '', pageId: '', desc: ''};
       },
       async getItemInfo() {
@@ -153,7 +153,7 @@
             appData: {
               pageId: "constantUiEditor",
               actionId: "getItemInfo",
-              where: {id: this.id},
+              where: {id: this.editItem.id},
               actionData: {}
             },
           },
@@ -184,7 +184,7 @@
         const {id, ...data} = this.editItem;
         data[this.language] = this.jsonConstantTypeList.includes(this.editItem.constantType) ? JSON.stringify(this.editItem[this.language]) : this.editItem[this.language];
         await window.vtoast.loading("新增数据");
-        await window.jianghuAxios({
+        const { data: { appData: { resultData: { rows } } } } = await window.jianghuAxios({
           data: {
             appData: {
               pageId: 'constantUiManagement',
@@ -193,6 +193,7 @@
             }
           }
         })
+        window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?id=${rows[0]}`;
         await window.vtoast.success("新增数据成功");
       },
 
