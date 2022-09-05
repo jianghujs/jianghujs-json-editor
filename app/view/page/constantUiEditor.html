@@ -71,6 +71,12 @@
           </v-col>
         </v-row>
       </v-form>
+      <v-overlay :value="loading" absolute>
+        <v-progress-circular
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
     </v-card>
   </v-container>
 
@@ -97,21 +103,17 @@
       ],
       currentClickButton: { title: '新增', action: 'add' },
       editItem: {},
-      computedEditItem: {},
       dialogSaveInfoAction: 'createItem',
       jsonError: false,
-      jsonConstantTypeList: ['object', 'array']
+      jsonConstantTypeList: ['object', 'array'],
+      loading: true,
+      id: null
     }),
-    watch: {
-      editItem(value) {
-        this.computedEditItem = value;
-      }
-    },
     async created() {
       const searchParams = new URLSearchParams(location.search.substring(1));
-      const type = searchParams.get('type');
-      if(type === 'edit') {
-        this.doUiAction('syncEditItem')
+      this.id = searchParams.get('id');
+      if(this.id) {
+        this.doUiAction('getItemInfo')
       } else {
         this.clearItemData();
       }
@@ -123,13 +125,15 @@
           case 'createItem':
             await this.confirmCreateItemDialog(uiActionData);
             await this.doCreateItem(uiActionData);
+            await this.getItemInfo();
             break;
           case 'updateItem':
             await this.confirmUpdateItemDialog(uiActionData);
             await this.doUpdateItem(uiActionData);
+            await this.getItemInfo();
             break;
-          case 'syncEditItem':
-            await this.syncEditItem(uiActionData);
+          case 'getItemInfo':
+            await this.getItemInfo();
             break;
           default:
             console.error("[doUiAction] uiActionId not find", { uiActionId });
@@ -139,16 +143,30 @@
       async clearItemData() {
         this.editItem = {constantKey: '', constantType: '', pageId: '', desc: ''};
       },
-      syncEditItem() {
+      async getItemInfo() {
+        const _this = this;
+        this.loading = true;
         this.currentClickButton = {action: 'edit', title: '修改'};
-        const constantUiItem = sessionStorage.getItem('constantUiItem');
-        if(constantUiItem) {
-          this.dialogSaveInfoAction = 'updateItem';
-          this.editItem = JSON.parse(constantUiItem);
-          sessionStorage.removeItem('constantUiItem');
+        this.dialogSaveInfoAction = 'updateItem';
+        const { data: { appData: { resultData: { rows } } } } = await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: "constantUiEditor",
+              actionId: "getItemInfo",
+              where: {id: this.id},
+              actionData: {}
+            },
+          },
+        });
+        if (!rows.length) {
+          this.clearItemData();
         } else {
-          history.back();
+          rows[0][this.language] = this.jsonConstantTypeList.includes(rows[0].constantType) ? JSON.parse(rows[0][this.language]) : rows[0][this.language];
+        this.editItem = rows[0];
         }
+        setTimeout(function() {
+          _this.loading = false;
+        }, 500)
       },
       /**
        * uiActionId:  createItem
@@ -163,9 +181,8 @@
       },
 
       async doCreateItem() {
-        delete this.computedEditItem.id;
-        const data = {...this.computedEditItem };
-        data[this.language] = this.jsonConstantTypeList.includes(this.computedEditItem.constantType) ? JSON.stringify(this.computedEditItem[this.language]) : this.computedEditItem[this.language];
+        const {id, ...data} = this.editItem;
+        data[this.language] = this.jsonConstantTypeList.includes(this.editItem.constantType) ? JSON.stringify(this.editItem[this.language]) : this.editItem[this.language];
         await window.vtoast.loading("新增数据");
         await window.jianghuAxios({
           data: {
@@ -192,10 +209,8 @@
       },
 
       async doUpdateItem() {
-        const id = this.computedEditItem.id;
-        delete this.computedEditItem.id;
-        const data = {...this.computedEditItem };
-        data[this.language] = this.jsonConstantTypeList.includes(this.computedEditItem.constantType) ? JSON.stringify(this.computedEditItem[this.language]) : this.computedEditItem[this.language];
+        const {id, ...data} = this.editItem;
+        data[this.language] = this.jsonConstantTypeList.includes(this.editItem.constantType) ? JSON.stringify(this.editItem[this.language]) : this.editItem[this.language];
         await window.vtoast.loading("修改数据");
         await window.jianghuAxios({
           data: {
@@ -203,7 +218,7 @@
               pageId: 'constantUiManagement',
               actionId: 'updateItem',
               actionData: data,
-              where: { id: id }
+              where: { id }
             }
           }
         })

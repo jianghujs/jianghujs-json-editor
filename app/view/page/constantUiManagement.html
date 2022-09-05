@@ -173,8 +173,7 @@
        * main:   [{"function":"doUpdateItem"},{"function":"openUpdateItemDialog"}]
       */
       async doUpdateItem({ item }) {
-        sessionStorage.setItem('constantUiItem', JSON.stringify(item))
-        window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?type=edit`;
+        window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?id=${item.id}`;
       },
 
       /**
