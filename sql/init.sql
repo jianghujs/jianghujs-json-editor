@@ -131,11 +131,10 @@ CREATE TABLE `_page` (
 # DATA DUMP FOR TABLE: _page
 # ------------------------------------------------------------
 
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'help',NULL,'帮助','dynamicInMenu','11','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (3,'login',NULL,'登陆','','','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (6,'manual',NULL,'操作手册','dynamicInMenu','0','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'help','helpV3','帮助','dynamicInMenu','11','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (3,'login','loginV3','登陆','','','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (25,'constantUiManagement',NULL,'Ui配置','showInMenu','2','update','vscode','vscode','2022-08-11T17:45:42+08:00');
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'constantUiEditor',NULL,'编辑','dynamicInMenu','0','update','vscode','vscode','2022-08-13T16:29:15+08:00');
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'constantUiEditor',NULL,'Ui配置编辑','dynamicInMenu','3','update','vscode','vscode','2022-08-13T16:29:15+08:00');
 
 
 
@@ -157,7 +156,7 @@ CREATE TABLE `_record_history` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_record_id` (`recordId`) USING BTREE,
   KEY `index_table_action` (`table`, `operation`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 COMMENT = '数据历史表';
+) ENGINE = InnoDB AUTO_INCREMENT = 18 COMMENT = '数据历史表';
 
 
 
@@ -184,7 +183,7 @@ CREATE TABLE `_resource` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 380 COMMENT = '请求资源表; 软删除未启用; resourceId=`${appId}.${pageId}.${actionId}`';
+) ENGINE = InnoDB AUTO_INCREMENT = 379 COMMENT = '请求资源表; 软删除未启用; resourceId=`${appId}.${pageId}.${actionId}`';
 
 
 # ------------------------------------------------------------
@@ -207,6 +206,7 @@ INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`acti
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (375,NULL,NULL,'constantUiManagement','insertItem','✅constantUiManagement查询-添加成员','sql','{}','{\"table\": \"web_constant_ui\", \"operation\": \"insert\"}',NULL,NULL,'insert',NULL,NULL,NULL);
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (376,NULL,NULL,'constantUiManagement','updateItem','✅constantUiManagement查询-更新成员','sql','{}','{\"table\": \"web_constant_ui\", \"operation\": \"jhUpdate\"}',NULL,NULL,'insert',NULL,NULL,NULL);
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (377,NULL,NULL,'constantUiManagement','deleteItem','✅constantUiManagement查询-删除信息','sql','{}','{\"table\": \"web_constant_ui\", \"operation\": \"jhDelete\"}',NULL,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (378,NULL,NULL,'constantUiEditor','getItemInfo','✅查询-查询列表','sql',NULL,'{\"table\":\"web_constant_ui\",\"operation\":\"select\"}',NULL,NULL,'insert','vscode','vscode','2022-09-05T20:40:17+08:00');
 
 
 
@@ -235,7 +235,7 @@ CREATE TABLE `_resource_request_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `resourceId_index` (`resourceId`) USING BTREE,
   KEY `packageId_index` (`packageId`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 48 COMMENT = '文件表; 软删除未启用;';
+) ENGINE = InnoDB AUTO_INCREMENT = 184 COMMENT = '文件表; 软删除未启用;';
 
 
 
@@ -285,7 +285,7 @@ CREATE TABLE `_test_case` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名; recordContent.operationByUser',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; recordContent.operationAt; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 33 COMMENT = '测试用例表';
+) ENGINE = InnoDB COMMENT = '测试用例表';
 
 
 # ------------------------------------------------------------
@@ -320,12 +320,6 @@ CREATE TABLE `_ui` (
 # DATA DUMP FOR TABLE: _ui
 # ------------------------------------------------------------
 
-INSERT INTO `_ui` (`id`,`pageId`,`uiActionType`,`uiActionId`,`desc`,`uiActionConfig`,`appDataSchema`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (64,'constantUiManagement','ui','refreshTableData','✅获取表格数据','{\"main\": [{\"function\": \"refreshTableData\"}]}',NULL,'update','vscode','vscode','2022-08-13T16:29:07+08:00');
-INSERT INTO `_ui` (`id`,`pageId`,`uiActionType`,`uiActionId`,`desc`,`uiActionConfig`,`appDataSchema`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (65,'constantUiManagement','ui','startCreateItem','✅获取表格数据','{\"main\":[{\"function\":\"clearItemData\"}]}',NULL,'update','vscode','vscode','2022-08-13T16:29:08+08:00');
-INSERT INTO `_ui` (`id`,`pageId`,`uiActionType`,`uiActionId`,`desc`,`uiActionConfig`,`appDataSchema`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (66,'constantUiEditor','ui','createItem','✅获取表格数据','{\"before\":[{\"function\":\"confirmCreateItemDialog\"}],\"main\":[{\"function\":\"doCreateItem\"}]}',NULL,'update','vscode','vscode','2022-08-13T16:41:58+08:00');
-INSERT INTO `_ui` (`id`,`pageId`,`uiActionType`,`uiActionId`,`desc`,`uiActionConfig`,`appDataSchema`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (67,'constantUiManagement','ui','startUpdateItem','✅获取表格数据','{\"main\":[{\"function\":\"prepareItemData\"}]}',NULL,'update','vscode','vscode','2022-08-13T16:29:08+08:00');
-INSERT INTO `_ui` (`id`,`pageId`,`uiActionType`,`uiActionId`,`desc`,`uiActionConfig`,`appDataSchema`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (68,'constantUiEditor','ui','updateItem','✅获取表格数据','{\"before\":[{\"function\":\"confirmUpdateItemDialog\"}],\"main\":[{\"function\":\"doUpdateItem\"}]}',NULL,'update','vscode','vscode','2022-08-13T16:41:58+08:00');
-INSERT INTO `_ui` (`id`,`pageId`,`uiActionType`,`uiActionId`,`desc`,`uiActionConfig`,`appDataSchema`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (69,'constantUiManagement','ui','deleteItem','✅获取表格数据','{\"before\": [{\"function\": \"confirmDeleteItemDialog\"}], \"main\": [{\"function\": \"doDeleteItem\"}, {\"function\": \"refreshTableData\"}]}',NULL,'update','vscode','vscode','2022-08-13T16:29:08+08:00');
 
 
 
@@ -352,7 +346,7 @@ CREATE TABLE `_user` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `username_index` (`username`) USING BTREE,
   UNIQUE KEY `userId_index` (`userId`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 50 COMMENT = '用户表';
+) ENGINE = InnoDB AUTO_INCREMENT = 49 COMMENT = '用户表';
 
 
 # ------------------------------------------------------------
@@ -506,7 +500,7 @@ CREATE TABLE `_user_session` (
   KEY `userId_index` (`userId`) USING BTREE,
   KEY `userId_deviceId_index` (`userId`, `deviceId`) USING BTREE,
   KEY `authToken_index` (`authToken`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 COMMENT = '用户session表; deviceId 维度;软删除未启用;';
+) ENGINE = InnoDB AUTO_INCREMENT = 5 COMMENT = '用户session表; deviceId 维度;软删除未启用;';
 
 
 
@@ -562,7 +556,7 @@ CREATE TABLE `student` (
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `studentId` (`studentId`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 181;
+) ENGINE = InnoDB AUTO_INCREMENT = 176;
 
 
 # ------------------------------------------------------------
@@ -598,7 +592,7 @@ CREATE TABLE `web_constant_ui` (
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `pageId_constantKey_unique` (`constantKey`, `pageId`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 30 COMMENT = '常量表;';
+) ENGINE = InnoDB AUTO_INCREMENT = 34 COMMENT = '常量表;';
 
 
 # ------------------------------------------------------------
@@ -607,7 +601,6 @@ CREATE TABLE `web_constant_ui` (
 
 INSERT INTO `web_constant_ui` (`id`,`constantKey`,`constantType`,`pageId`,`desc`,`en`,`zh`,`kr`,`yueyu`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (1,'header','object','all',NULL,'{\r\n\t\"logo\": \"/logo.png\",\r\n\t\"menuList\": [{\r\n\t\t\"menuName\": \"首页\",\r\n\t\t\"path\": \"/\"\r\n\t},{\r\n\t\t\"menuName\": \"活动\",\r\n\t\t\"path\": \"/?page_id=33739\"\r\n\t},{\r\n\t\t\"menuName\": \"联系我们\",\r\n\t\t\"path\": \"/?page_id=18070\"\r\n\t},{\r\n\t\t\"menuName\": \"讲道\",\r\n\t\t\"path\": \"/?cat=28\"\r\n\t},{\r\n\t\t\"menuName\": \"祷告\",\r\n\t\t\"path\": \"/?cat=3303\"\r\n\t},{\r\n\t\t\"menuName\": \"查经\",\r\n\t\t\"path\": \"/?page_id=2092\"\r\n\t},{\r\n\t\t\"menuName\": \"课程\",\r\n\t\t\"path\": \"/?page_id=19281\"\r\n\t},{\r\n\t\t\"menuName\": \"事工\",\r\n\t\t\"path\": \"/?page_id=42188\"\r\n\t},{\r\n\t\t\"menuName\": \"见证\",\r\n\t\t\"path\": \"/?cat=50\"\r\n\t},{\r\n\t\t\"menuName\": \"命定书屋\",\r\n\t\t\"path\": \"/?page_id=4190\"\r\n\t},{\r\n\t\t\"menuName\": \"奉献\",\r\n\t\t\"path\": \"/?page_id=5713\"\r\n\t},{\r\n\t\t\"menuName\": \"命定音乐\",\r\n\t\t\"path\": \"/?p=24196\"\r\n\t},{\r\n\t\t\"menuName\": \"命定神学\",\r\n\t\t\"path\": \"/?page_id=18860\"\r\n\t}],\r\n\t\"userAction\": {\r\n\t\t\"isOpen\": true,\r\n\t\t\"admin\": true,\r\n\t\t\"password\": true,\r\n\t\t\"logout\": true\r\n\t}\r\n}','{\"logo\":\"/logo.png\",\"menuList\":[{\"menuName\":\"首页\",\"path\":\"/\"},{\"menuName\":\"活动\",\"path\":\"/?page_id=33739\"},{\"menuName\":\"联系我们\",\"path\":\"/?page_id=18070\"},{\"menuName\":\"讲道\",\"path\":\"/?cat=28\"},{\"menuName\":\"祷告\",\"path\":\"/?cat=3303\"},{\"menuName\":\"查经\",\"path\":\"/?page_id=2092\"},{\"menuName\":\"课程\",\"path\":\"/?page_id=19281\"},{\"menuName\":\"事工\",\"path\":\"/?page_id=42188\"},{\"menuName\":\"见证\",\"path\":\"/?cat=50\"},{\"menuName\":\"命定书屋\",\"path\":\"/?page_id=4190\"},{\"menuName\":\"奉献\",\"path\":\"/?page_id=5713\"},{\"menuName\":\"命定音乐\",\"path\":\"/?p=24196\"},{\"menuName\":\"命定神学\",\"path\":\"/?page_id=18860\"}],\"userAction\":{\"isOpen\":true,\"loginText\":\"登录\",\"logoutText\":\" logout\",\"visitorText\":\"游客\",\"admin\":true,\"password\":true,\"logout\":true}}',NULL,NULL,'jhUpdate','admin','系统管理员','2022-06-30T14:10:46+08:00');
 INSERT INTO `web_constant_ui` (`id`,`constantKey`,`constantType`,`pageId`,`desc`,`en`,`zh`,`kr`,`yueyu`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'featureArticleList','array','all',NULL,'[ 39163, 39056, 21953, 22075, 21932 ]','[ 39163, 39056, 21953, 22075, 21932, 123 ]',NULL,NULL,'jhUpdate','admin','系统管理员','2022-06-29T17:25:28+08:00');
-INSERT INTO `web_constant_ui` (`id`,`constantKey`,`constantType`,`pageId`,`desc`,`en`,`zh`,`kr`,`yueyu`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (21,'ad123','object','all',NULL,'{\n  \"header\": {\n    \"name\": \"旋风APP\",\n    \"img\": \"/xuanfeng_mingding_web/public/mingding/%E5%91%BD%E5%AE%9A%E7%A5%9E%E5%AD%A6APP%E6%B5%B7%E6%8A%A5-scaled.jpg\",\n    \"link\": \"https://zhuce.jhxf.org/app_register/visitor/register\"\n  }\n}','{\"banner\":{\"isOpen\":true,\"name\":\"旋风APP\",\"img\":\"/xuanfeng_mingding_web/public/images/%E5%91%BD%E5%AE%9A%E7%A5%9E%E5%AD%A6APP%E6%B5%B7%E6%8A%A5-scaled.jpg\",\"link\":\"https://zhuce.jhxf.org/app_register/visitor/register\"},\"adList\":[{\"name\":\"旋风APP\",\"img\":\"/xuanfeng_mingding_web/public/images/%E5%91%BD%E5%AE%9A%E7%A5%9E%E5%AD%A6APP%E6%B5%B7%E6%8A%A5-scaled.jpg\",\"link\":\"https://zhuce.jhxf.org/app_register/visitor/register\"}],\"logo\":{\"isOpen\":true,\"name\":\"命定神学\",\"img\":\"/xuanfeng_mingding_web/public/images/未标题-5.png\",\"link\":\"/\"}}',NULL,NULL,'jhUpdate','admin','系统管理员','2022-08-13T16:38:52+08:00');
 INSERT INTO `web_constant_ui` (`id`,`constantKey`,`constantType`,`pageId`,`desc`,`en`,`zh`,`kr`,`yueyu`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (23,'globalText','object','all',NULL,NULL,'{\"sidebar\":{\"comment\":\" 留言 \",\"attention\":\"大家关注\"},\"comment\":{\"title\":\"发表评论\",\"cancelComment\":\"取消评论\",\"emailNotice\":\"电子邮件地址不会被公开。\",\"comment\":\"评论\",\"name\":\"姓名\",\"email\":\"电子邮件\"}}',NULL,NULL,'jhUpdate','admin','系统管理员','2022-06-30T14:40:34+08:00');
 INSERT INTO `web_constant_ui` (`id`,`constantKey`,`constantType`,`pageId`,`desc`,`en`,`zh`,`kr`,`yueyu`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (24,'home','object','home',NULL,NULL,'{\"multiLanguage\":{\"isOpen\":false,\"list\":[{\"img\":\"/xuanfeng_mingding_web/public/images/cn.png\",\"link\":\"http://www.mingding.org/\"},{\"img\":\"/xuanfeng_mingding_web/public/images/en.png\",\"link\":\"http://en.mingding.org/\"},{\"img\":\"/xuanfeng_mingding_web/public/images/kr.png\",\"link\":\"http://kr.mingding.org/\"},{\"img\":\"/xuanfeng_mingding_web/public/images/zhyue.png\",\"link\":\"https://yueyu.mingding.org/\"}]},\"witnessTitle\":\"最新见证\",\"articleTitle\":\"最新文章\",\"witness\":{\"isOpen\":true,\"title\":\"最新见证\"}}',NULL,NULL,'jhUpdate','admin','系统管理员','2022-07-02T09:08:50+08:00');
 INSERT INTO `web_constant_ui` (`id`,`constantKey`,`constantType`,`pageId`,`desc`,`en`,`zh`,`kr`,`yueyu`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (25,'comment','object','all',NULL,NULL,'{\"title\":\"发表评论\",\"cancelComment\":\"取消评论\",\"emailNotice\":\"电子邮件地址不会被公开。\",\"content\":{\"label\":\"评论\",\"required\":\"请填写评论\"},\"name\":{\"label\":\"姓名\",\"required\":\"请填写姓名\"},\"email\":{\"label\":\"电子邮件\",\"required\":\"请填写邮箱\",\"format\":\"邮箱格式错误\"},\"code\":{\"format\":\"验证码错误\",\"list\":{\"1\":\"一\",\"2\":\"二\",\"3\":\"三\",\"4\":\"四\",\"5\":\"五\",\"6\":\"六\",\"7\":\"七\",\"8\":\"八\",\"9\":\"九\"}},\"success\":\"提交成功\",\"reply\":\"回复1\"}',NULL,NULL,'jhUpdate','admin','系统管理员','2022-06-30T15:13:59+08:00');
