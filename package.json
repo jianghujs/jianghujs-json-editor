@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "egg": "^2.15.1",
-    "@jianghujs/jianghu": "3.0.50",
+    "@jianghujs/jianghu": "3.0.65",
     "egg-scripts": "^2.11.0"
   },
   "devDependencies": {
