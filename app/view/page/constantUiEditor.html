@@ -148,7 +148,7 @@
         this.loading = true;
         this.currentClickButton = {action: 'edit', title: '修改'};
         this.dialogSaveInfoAction = 'updateItem';
-        const { data: { appData: { resultData: { rows } } } } = await window.jianghuAxios({
+        const { rows } = (await window.jianghuAxios({
           data: {
             appData: {
               pageId: "constantUiEditor",
@@ -157,7 +157,7 @@
               actionData: {}
             },
           },
-        });
+        })).data.appData.resultData;
         if (!rows.length) {
           this.clearItemData();
         } else {
@@ -184,7 +184,7 @@
         const {id, ...data} = this.editItem;
         data[this.language] = this.jsonConstantTypeList.includes(this.editItem.constantType) ? JSON.stringify(this.editItem[this.language]) : this.editItem[this.language];
         await window.vtoast.loading("新增数据");
-        const { data: { appData: { resultData: { rows } } } } = await window.jianghuAxios({
+        const { rows } = (await window.jianghuAxios({
           data: {
             appData: {
               pageId: 'constantUiManagement',
@@ -192,7 +192,7 @@
               actionData: data
             }
           }
-        })
+        })).data.appData.resultData;
         window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?id=${rows[0]}`;
         await window.vtoast.success("新增数据成功");
       },
