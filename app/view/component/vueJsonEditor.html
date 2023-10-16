@@ -1,0 +1,123 @@
+<script type="text/x-template" id="vue-json-editor">
+  <div>
+    <div class="jsoneditor-vue" :style="{height}"></div>
+  </div>
+</script>
+
+<link href="/<$ ctx.app.config.appId $>/public/plugins/jsoneditor/jsoneditor.css" rel="stylesheet">
+<script src="/<$ ctx.app.config.appId $>/public/plugins/jsoneditor/jsoneditor.js"></script>
+<script>
+  Vue.component("vue-json-editor", {
+    template: "#vue-json-editor",
+    props: {
+      value: [String, Number, Object, Array],
+      expandedOnStart: {
+        type: Boolean,
+        default: false
+      },
+      mode: {
+        type: String,
+        default: "code"
+      },
+      modes: {
+        type: Array,
+        default: function () {
+          return ["tree", "code", "form", "text", "view"];
+        }
+      },
+      // Add the totalHeight prop
+      height: {
+        type: String,
+        default: 'calc(100vh - 240px)'
+      },
+    },
+    watch: {
+      value: {
+        immediate: true,
+        async handler(val) {
+          if (!this.internalChange) {
+            await this.setEditor(val);
+
+            this.error = false;
+            this.expandAll();
+          }
+        },
+        deep: true
+      }
+    },
+    data() {
+      return {
+        editor: null,
+        error: false,
+        json: this.value,
+        internalChange: false,
+        expandedModes: ["tree", "view", "form"],
+      };
+    },
+    mounted() {
+      this.$emit("has-error", false);
+      this.init();
+    },
+    methods: {
+      init() {
+        let self = this;
+
+        let options = {
+          mode: this.mode,
+          modes: this.modes, // allowed modes
+          // theme: "bootstrap4",
+          themeColor: "#007bff",
+          onChange() {
+            try {
+              let json = self.editor.get();
+              self.json = json;
+              self.error = false;
+              self.$emit("has-error", false);
+              self.internalChange = true;
+              self.$emit("input", json);
+              self.$nextTick(function () {
+                self.internalChange = false;
+              });
+            } catch (e) {
+              self.error = true;
+              self.$emit("has-error", true);
+            }
+          },
+          onModeChange() {
+            self.expandAll();
+          }
+        };
+        this.editor = new JSONEditor(
+          self.$el.querySelector(".jsoneditor-vue"),
+          options,
+          self.json
+        );
+      },
+      expandAll() {
+        if (
+          this.expandedOnStart &&
+          this.expandedModes.includes(this.editor.getMode())
+        ) {
+          this.editor.expandAll();
+        }
+      },
+
+      async setEditor(value) {
+        if (this.editor) this.editor.set(value);
+      }
+    }
+  });
+</script>
+
+<style scoped>
+  .jsoneditor-menu a.jsoneditor-poweredBy {
+    display: none;
+  }
+  .jsoneditor-menu {
+    background-color: #4caf50;
+    border-bottom: 1px solid #4caf50;
+  }
+  .jsoneditor {
+    border: thin solid #4caf50;
+  }
+</style>

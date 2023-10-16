@@ -1,0 +1,289 @@
+{% extends 'template/jhTemplateV4.html'%}
+
+{% set language = ctx.app.config.language %}
+
+{% block vueTemplate %}
+
+<script type="text/html" id="app-template">
+  <div>
+    <v-app mobile-breakpoint="sm">
+      <jh-menu />
+      <v-main class="mt-15">
+        <!-- 头部内容 >>>>>>>>>>>>> -->
+        <div class="jh-page-second-bar px-8">
+          <v-row class="align-center">
+            <v-col cols="12" xs="12" sm="12" md="4" xl="3">
+              <div class="py-4 text-body-1 font-weight-bold">Ui配置
+                <!-- 帮助页按钮 -->
+                <span role="button" class="success--text font-weight-regular jh-font-size-13 ml-2" @click="isHelpPageDrawerShown = true">
+                  <v-icon size="13" class="success--text">mdi-help-circle-outline</v-icon>帮助
+                </span>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
+        <!-- <<<<<<<<<<<<< 头部内容 -->
+      
+        <div class="jh-page-body-container px-8">
+          <!-- 页面内容 >>>>>>>>>>>>> -->
+          <v-card class="rounded-lg">
+            <v-row class="ma-0 pa-4">
+              <!--新增按钮-->
+              <v-btn color="success" class="elevation-0 mr-2" @click="doUiAction('createItem')"
+                small>新增</v-btn>
+              <v-spacer></v-spacer>
+              <!--搜索过滤-->
+              <v-col cols="12" xs="8" sm="4" md="3" xl="2" class="pa-0">
+                <v-text-field color="success" v-model="searchInput" prefix="搜索：" class="jh-v-input" dense
+                  filled single-line></v-text-field>
+              </v-col>
+            </v-row>
+            <!--表格-->
+            <v-data-table :headers="headers" :items="tableData" :search="searchInput"
+              :footer-props="{ itemsPerPageOptions: [20, 50, -1], itemsPerPageText: '每页行数', itemsPerPageAllText: '所有'}"
+              :items-per-page="-1" mobile-breakpoint="0" :loading="isTableLoading"
+              checkbox-color="success" fixed-header :class="{'zebraLine': isTableZebraLineShown }"
+              class="jh-fixed-table-height elevation-0 mt-0 mb-xs-4">
+              <!-- 表格行操作按钮 -->
+              <template v-slot:item.action="{ item }">
+                <template>
+                  <!-- pc端 -->
+                  <template v-if="!isMobile">
+                    <span role="button" class="success--text font-weight-medium font-size-2 mr-2" @click="doUiAction('updateItem', item)">
+                      <v-icon size="16" class="success--text">mdi-note-edit-outline</v-icon>修改
+                    </span>
+                    <span role="button" class="red--text text--accent-2 font-weight-medium font-size-2" @click="doUiAction('deleteItem', item)">
+                      <v-icon size="16" class="red--text text--accent-2">mdi-trash-can-outline</v-icon>删除
+                    </span>
+                  </template>
+                  <!-- 手机端 -->
+                  <v-menu offset-y v-if="isMobile">
+                    <template v-slot:activator="{ on, attrs }">
+                      <span role="button" class="success--text font-weight-medium font-size-2"
+                        v-bind="attrs" v-on="on">
+                        操作<v-icon size="14" class="success--text">mdi-chevron-down</v-icon>
+                      </span>
+                    </template>
+                    <v-list dense>
+                      <v-list-item @click="doUiAction('updateItem', item)">
+                        <v-list-item-title>修改</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="doUiAction('deleteItem', item)">
+                        <v-list-item-title>删除</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </template>
+              </template>
+              <!--没有数据-->
+              <template v-slot:loading>
+                <div class="jh-no-data">数据加载中</div>
+              </template>
+              <template v-slot:no-data>
+                <div class="jh-no-data">暂无数据</div>
+              </template>
+              <template v-slot:no-results>
+                <div class="jh-no-data">暂无数据</div>
+              </template>
+              <!--表格分页-->
+              <template v-slot:footer.page-text="pagination">
+                <span>{{pagination.pageStart}}-{{pagination.pageStop}}</span>
+                <span class="ml-1">共{{pagination.itemsLength}}条</span>
+              </template>
+            </v-data-table>
+          </v-card>
+          <!-- <<<<<<<<<<<<< 页面内容 -->
+        </div>
+  
+        <!-- 帮助页抽屉 >>>>>>>>>>>>> -->
+        <v-navigation-drawer v-model="isHelpPageDrawerShown" v-click-outside="drawerClickOutside" fixed temporary
+          right width="80%" class="elevation-24">
+          <iframe style="border: 0" :src="`/${appInfo.appId}/pageDoc#1.constantUiList.md`" width="100%"
+            height="100%"></iframe>
+  
+          <v-btn elevation="0" color="success" fab absolute top left small tile class="drawer-close-float-btn"
+            @click="isHelpPageDrawerShown = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-navigation-drawer>
+        <!-- <<<<<<<<<<<<< 帮助页抽屉 -->
+  
+      </v-main>
+    </v-app>
+  
+    <jh-toast />
+    <jh-mask />
+    <jh-confirm-dialog />
+  
+  </div>
+</script>
+
+<div id="app">
+</div>
+
+
+{% endblock %}
+
+{% block vueScript %}
+
+<!-- 加载页面组件 >>>>>>>>>>>>> -->
+{% include 'common/jianghuJs/fixedTableHeightV4.html' %}
+<!-- <<<<<<<<<<<<< 加载页面组件 -->
+
+<script type="module">
+  new Vue({
+    el: '#app',
+    template: '#app-template',
+    vueComponent: 'page',
+    vuetify: new Vuetify(),
+    data: {
+      language: '<$ language $>',
+      isHelpPageDrawerShown: false,
+      isMobile: window.innerWidth < 500,
+
+      // 表格相关数据
+      isTableZebraLineShown: true,
+      validationRules: {
+        requireRules: [
+          v => !!v || 'This is required',
+        ],
+      },
+      searchInput: null,
+      isTableLoading: true,
+      tableData: [],
+      headers: [
+        { text: "ID", value: "id", width: 80 },
+        { text: "constantKey", value: "constantKey", width: 120 },
+        { text: "常量类型", value: "constantType", width: 120 },
+        { text: "页面id", value: "pageId", width: 120 },
+        { text: "描述", value: "desc", width: 120 },
+        { text: "操作者", value: "operationByUser", width: 90 },
+        { text: "操作时间", value: "operationAt", width: 150 },
+        {text: '操作', value: 'action', align: 'center', sortable: false, width: window.innerWidth < 500 ? 80 : 120, class: 'fixed', cellClass: 'fixed'},
+      ],
+
+      //jsoneditor
+      constantTypeList: ['object', 'array'],
+
+      // 操作相关
+      isCreateDrawerShown: false,
+      createItem: {},
+      createActionData: {},
+      isUpdateDrawerShown: false,
+      updateItem: {},
+      updateItemId: null,
+      updateActionData: {},
+      deleteItem: {},
+      deleteItemId: null,
+    },
+    watch: {},
+    mounted() {
+      this.doUiAction('getTableData');
+    },
+    methods: {
+      async doUiAction(uiActionId, uiActionData) {
+        switch (uiActionId) {
+          case 'getTableData':
+            await this.getTableData();
+            await this.formatTableData();
+            break;
+          case 'createItem':
+            await this.redirectToCreate();
+            break;
+          case 'updateItem':
+            await this.redirectToUpdate(uiActionData);
+            break;
+          case 'deleteItem':
+            await this.prepareDeleteFormData(uiActionData);
+            await this.confirmDeleteItemDialog();
+            await this.prepareDoDeleteItem();
+            await this.doDeleteItem();
+            await this.clearDeleteItem();
+            await this.doUiAction('getTableData');
+            break;
+          default:
+            console.error("[doUiAction] uiActionId not find", { uiActionId });
+            break;
+        }
+      },
+
+      // ---------- 获取数据 uiAction >>>>>>>>>> --------
+      async getTableData() {
+        this.isTableLoading = true;
+        const rows = (await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'constantUiList',
+              actionId: 'selectItemList',
+              actionData: {},
+              where: {},
+              orderBy: [{ column: 'operationAt', order: 'desc' }]
+            }
+          }
+        })).data.appData.resultData.rows;
+
+        rows.forEach(row => {
+          row.operationAt = window.dayjs(row.operationAt).format('YYYY-MM-DD HH:mm:ss');
+        })
+        this.tableData = rows;
+        this.isTableLoading = false;
+      },
+      async formatTableData() {
+        let rows = _.cloneDeep(this.tableData); 
+        for (const item of rows) {
+          if (this.constantTypeList.includes(item.constantType)) {
+            item[this.language] = JSON.parse(item[this.language]);
+          }
+        }
+        this.tableData = rows;
+      },
+      // ---------- <<<<<<<<<<< 获取数据 uiAction  --------
+
+      // ---------- 跳转编辑页面 uiAction >>>>>>>>>>>> --------
+      async redirectToCreate() {
+        window.location.href = `/${window.appInfo.appId}/page/constantUiEditor`
+      },
+      async redirectToUpdate(funObj) {
+        window.location.href = `/${window.appInfo.appId}/page/constantUiEditor?id=${funObj.id}`
+      },
+      // ---------- <<<<<<<<<<< 跳转编辑页面 uiAction  --------
+
+      // ---------- 删除数据 uiAction >>>>>>>>>>>> --------
+      async prepareDeleteFormData(funObj) {
+        this.deleteItem = _.cloneDeep(funObj);
+      },
+      async confirmDeleteItemDialog() {
+        if (await window.confirmDialog({ title: "删除", content: "确定删除吗？" }) === false) {
+          throw new Error("[confirmDeleteItemDialog] 否");
+        }
+      },
+      async prepareDoDeleteItem() {
+        const { id, classId } = this.deleteItem;
+        this.deleteItemId = id;
+      },
+      async doDeleteItem() {
+        await window.vtoast.loading("删除数据");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'constantUiList',
+              actionId: 'deleteItem',
+              actionData: {},
+              where: { id: this.deleteItemId }
+            }
+          }
+        });
+        await window.vtoast.success("删除数据成功");
+      },
+      async clearDeleteItem() {
+        this.deleteItem = {};
+        this.deleteItemId = null;
+      },
+      // ---------- <<<<<<<<<<< 删除数据 uiAction  --------
+    }
+  })
+</script>
+
+<style scoped>
+</style>
+{% endblock %}
