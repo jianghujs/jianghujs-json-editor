@@ -1,0 +1,362 @@
+<!-- 适配 >>>>>>>>>>>>> -->
+<style>
+    @media (min-width: 1264px) {
+        .container {
+            max-width: 100vw;
+        }
+    }
+
+    @media (min-width: 960px) {
+        .container {
+            max-width: 100vw;
+        }
+    }
+
+    @media (min-width: 600px) {
+
+        /* 有侧边栏页面的主体main */
+        .jh-has-side-menu-main {
+            margin-left: 208px;
+        }
+    }
+
+    @media (max-width: 960px) {
+
+        /* 边距 >>>>>> */
+        body .v-application .mt-xs-0 {
+            margin-top: 0 !important;
+        }
+
+        body .v-application .ml-xs-n1 {
+            margin-left: -4px !important;
+        }
+
+        body .v-application .pa-xs-0 {
+            padding: 0 !important;
+        }
+
+        body .v-application .py-xs-0 {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        body .v-application .px-xs-0 {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        body .v-application .pb-xs-2 {
+            padding-bottom: 8px !important;
+        }
+
+        body .v-application .pr-xs-1 {
+            padding-right: 4px !important;
+        }
+
+        body .v-application .pl-xs-1 {
+            padding-left: 4px !important;
+        }
+
+        body .v-application .pt-xs-0 {
+            padding-top: 0 !important;
+        }
+
+        /* <<<<< 边距 */
+
+        /* 服务端搜索按钮 */
+        body .jh-backend-search-btn {
+            width: 100%;
+        }
+
+        /* 服务端搜索位置兼容 */
+        body .v-application .jh-backend-form-container {
+            justify-content: start !important;
+            padding-top: 0 !important;
+            position: relative;
+        }
+    }
+
+    @media (max-width: 600px) {
+
+        /* 布局 >>>>>> */
+        body [xs='1'] {
+            flex: 1;
+        }
+
+        body [xs='2'] {
+            flex: 2;
+        }
+
+        body [xs='3'] {
+            flex: 3;
+        }
+
+        body [xs='4'] {
+            flex: 4;
+        }
+
+        body [xs='5'] {
+            flex: 5;
+        }
+
+        body [xs='6'] {
+            flex: 6;
+        }
+
+        body [xs='7'] {
+            flex: 7;
+        }
+
+        body [xs='8'] {
+            flex: 8;
+        }
+
+        body [xs='9'] {
+            flex: 9;
+        }
+
+        body [xs='10'] {
+            flex: 10;
+        }
+
+        body [xs='11'] {
+            flex: 11;
+        }
+
+        body [xs='12'] {
+            flex: 12;
+            min-width: 100%
+        }
+
+        /* <<<<< 布局 */
+
+        /* 表单 >>>>>> */
+        body span.jh-input-label {
+            line-height: 20px !important;
+        }
+
+        /* <<<<< 表单 */
+
+
+        /* 抽屉 >>>>>> */
+        /* 抽屉的列表 */
+        body .v-navigation-drawer__content .v-list-item .v-list-item__title {
+            font-weight: 500;
+        }
+
+        body .v-navigation-drawer__content .v-list-item:not(.v-item--active) .v-list-item__title {
+            color: #5E6278;
+        }
+
+        body .v-navigation-drawer__content .v-list-item--link:before {
+            border-radius: 5px !important;
+            margin: 2px 15px;
+        }
+
+        /* 抽屉的表格分页，间隔缩小 */
+        .v-navigation-drawer__content .v-data-footer .v-application--is-ltr .v-text-field .v-input__append-inner .v-input__icon,
+        .v-navigation-drawer__content .v-data-footer .v-application--is-rtl .v-text-field .v-input__prepend-inner .v-input__icon {
+            min-width: 14px;
+            width: 14px;
+        }
+
+        .v-navigation-drawer__content .v-data-footer .v-application--is-ltr .v-text-field .v-input__append-inner .mdi-menu-down::before,
+        .v-navigation-drawer__content .v-data-footer .v-application--is-rtl .v-text-field .v-input__prepend-inner .mdi-menu-down::before {
+            font-size: 16px;
+        }
+
+        /* 抽屉的标题 */
+        body .v-application .jh-page-body-container .v-navigation-drawer .v-navigation-drawer__content .title {
+            padding-left: 24px !important;
+        }
+
+        /* 抽屉表单元素 */
+        body .v-application .jh-page-body-container .v-navigation-drawer .v-navigation-drawer__content>form>.row:nth-child(2) {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+
+        body .v-application .jh-page-body-container .v-navigation-drawer .v-navigation-drawer__content>form>.row:nth-child(2)>div {
+            padding-top: 16px !important;
+            padding-bottom: 0 !important;
+        }
+
+        /* 抽屉的操作按钮 */
+        body .v-application .jh-page-body-container .v-navigation-drawer .v-navigation-drawer__content>form>.row:nth-child(3) {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+
+        /* 抽屉 绿色关闭按钮 */
+        body .v-application .v-navigation-drawer__content .drawer-close-float-btn {
+            position: fixed !important;
+            top: 12px !important;
+            left: 12px !important;
+            border-radius: 100% !important;
+            height: 30px;
+            width: 30px;
+            z-index: 20;
+        }
+
+        body .v-application .v-navigation-drawer__content .jh-drawer-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        body .v-application .v-navigation-drawer__content .jh-drawer-action-btn-group {
+            display: flex;
+            justify-content: end;
+            padding-right: 10px;
+            position: fixed;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid #eee;
+            left: 0;
+            right: 0;
+            padding-bottom: 10px;
+        }
+
+        /* 抽屉 除了系统菜单抽屉 */
+        body .v-application .v-navigation-drawer:not(.jh-page-nav-bar) {
+            width: 100% !important;
+            border-left: none !important;
+        }
+
+        .theme--light.v-navigation-drawer:not(.v-navigation-drawer--floating) .v-navigation-drawer__border {
+            display: none !important;
+        }
+
+        body .v-application .v-navigation-drawer__content {
+            position: relative !important;
+            padding-bottom: 20px;
+        }
+
+        /* <<<<< 抽屉 */
+
+
+        /* table >>>>>> */
+        .v-data-footer {
+            flex-wrap: nowrap;
+        }
+
+        /* 弹窗里页面jh-page边距的处理 */
+        .v-application .v-navigation-drawer .jh-page-second-bar {
+            margin-top: 15px;
+            padding-right: 16px !important;
+            padding-left: 16px !important;
+        }
+
+        .v-application .v-navigation-drawer .jh-page-body-container {
+            padding-right: 4px !important;
+            padding-left: 4px !important;
+        }
+
+        .v-data-table--mobile,
+        .v-data-table:not(.v-data-table--mobile) {
+            margin: 12px;
+        }
+
+        .row>.col-12>.v-data-table--mobile {
+            margin: 0
+        }
+
+        .v-data-footer__pagination {
+            margin: 0 5px !important;
+            white-space: nowrap;
+        }
+
+        .v-application--is-ltr .v-data-footer__select .v-select {
+            margin-left: 5px !important;
+        }
+
+        .v-application--is-ltr .v-data-table--fixed-header .v-data-footer {
+            margin-right: 5px !important;
+        }
+
+        .v-data-table>.v-data-table__wrapper>table>tbody>tr>td,
+        .v-data-table>.v-data-table__wrapper>table>tbody>tr>th,
+        .v-data-table>.v-data-table__wrapper>table>tfoot>tr>td,
+        .v-data-table>.v-data-table__wrapper>table>tfoot>tr>th,
+        .v-data-table>.v-data-table__wrapper>table>thead>tr>td,
+        .v-data-table>.v-data-table__wrapper>table>thead>tr>th {
+            padding: 0 5px !important;
+        }
+
+        .flex-column.hasFilterContainer .v-data-table__wrapper {
+            max-height: calc(100vh - 405px);
+        }
+
+        table>tbody>tr>td.fixed:nth-child(2),
+        table>thead>tr>th.fixed:nth-child(2) {
+            left: 0 !important;
+        }
+
+        /* table footer */
+        body .v-application .v-data-footer {
+            flex-wrap: wrap !important;
+            justify-content: start !important;
+        }
+
+        body .v-application .v-data-footer__select {
+            flex: 1 !important;
+        }
+
+        /* table 取消定高 */
+        .jh-fixed-table-height {
+            height: auto !important;
+        }
+
+        /* <<<<< table */
+
+
+        /* 系统菜单 >>>>>> */
+        body .jh-page-nav-bar .v-list-item {
+            border-top: 1px solid #FFFFFF;
+            min-height: 42px !important;
+            padding: 0 10px !important;
+        }
+
+        body .jh-page-nav-bar .v-list-item:first-child {
+            height: 50px !important;
+        }
+
+        body .jh-page-nav-bar .v-navigation-drawer__content .v-list-item--link:before {
+            margin: 0 !important;
+        }
+
+        body .jh-page-nav-bar .v-list-group__header__append-icon {
+            margin-right: 8px !important;
+        }
+
+        body .v-application .jh-page-header {
+            padding: 0 16px !important;
+            border-bottom: 0 !important;
+        }
+
+        body .v-application .jh-page-header .v-toolbar__title {
+            flex: 1 !important;
+        }
+
+        /* <<<<< 系统菜单 */
+
+        /* dialog >>>>>> */
+        .jh-dialog-mobile-fullscreen {
+            width: 100% !important;
+            height: 100%;
+            margin: 0;
+            max-height: 100% !important;
+        }
+
+        /* <<<<< dialog */
+
+        /* tabs */
+        .v-tabs:not(.v-tabs--vertical).v-tabs--right>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__next,
+        .v-tabs:not(.v-tabs--vertical):not(.v-tabs--right)>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__prev {
+            display: none;
+        }
+    }
+</style>
+<!-- <<<<<<<<<<<<< 适配 -->
